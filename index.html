@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Track your income and expenses, see your balance, and review your transaction history.">
+  <title>Personal Expense Tracker</title>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%B0%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Personal Expense Tracker</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="page-head">
+      <h1>Financial Dashboard</h1>
+      <p>Manage your income and expenses in one place.</p>
+    </div>
+
+    <section class="summary" aria-label="Financial summary">
+      <article class="stat stat-income">
+        <h2>Total Income</h2>
+        <p class="stat-value" id="totalIncome">LKR 0.00</p>
+      </article>
+      <article class="stat stat-expense">
+        <h2>Total Expenses</h2>
+        <p class="stat-value" id="totalExpense">LKR 0.00</p>
+      </article>
+      <article class="stat stat-balance" id="balanceCard">
+        <h2>Current Balance</h2>
+        <p class="stat-value" id="balance">LKR 0.00</p>
+      </article>
+    </section>
+
+    <section class="card" aria-labelledby="overviewTitle">
+      <h2 class="card-title" id="overviewTitle">Money overview</h2>
+      <div class="overview">
+        <div class="meters">
+          <div class="meter">
+            <div class="meter-head"><span>Income</span><strong id="meterIncomeText">LKR 0.00</strong></div>
+            <div class="track"><div class="fill fill-income" id="meterIncome"></div></div>
+          </div>
+          <div class="meter">
+            <div class="meter-head"><span>Expenses</span><strong id="meterExpenseText">LKR 0.00</strong></div>
+            <div class="track"><div class="fill fill-expense" id="meterExpense"></div></div>
+          </div>
+        </div>
+        <div class="donut gauge" role="img" aria-label="Savings rate">
+          <svg viewBox="0 0 42 42" aria-hidden="true">
+            <circle class="gauge-track" cx="21" cy="21" r="15.9155"></circle>
+            <circle class="gauge-fill" id="gaugeFill" cx="21" cy="21" r="15.9155" transform="rotate(-90 21 21)" stroke-dasharray="0 100"></circle>
+          </svg>
+          <div class="donut-center">
+            <strong id="gaugeValue">0%</strong>
+            <span id="gaugeLabel">Savings rate</span>
+          </div>
+        </div>
+      </div>
+      <div class="facts" id="facts"></div>
+    </section>
+
+    <section class="charts" aria-label="Charts">
+      <article class="card">
+        <div class="chart-head">
+          <h2 class="card-title">Breakdown by category</h2>
+          <div class="segmented segmented-sm" id="pieToggle" role="group" aria-label="Chart type">
+            <input type="radio" name="pieType" id="pie-expense" value="expense" checked>
+            <label for="pie-expense">Expenses</label>
+            <input type="radio" name="pieType" id="pie-income" value="income">
+            <label for="pie-income">Income</label>
+          </div>
+        </div>
+        <div class="donut-layout" id="pieLayout">
+          <div class="donut" id="pieChart" role="img" aria-label="Donut chart by category"></div>
+          <ul class="legend" id="pieLegend"></ul>
+        </div>
+        <p class="empty" id="pieEmpty" hidden></p>
+      </article>
+
+      <article class="card">
+        <div class="chart-head">
+          <h2 class="card-title">Monthly income and expenses</h2>
+          <p class="chart-note">Last 6 months</p>
+        </div>
+        <div id="barChart" role="img" aria-label="Bar chart of income and expenses for the last 6 months"></div>
+        <p class="empty" id="barEmpty" hidden>Add a transaction to see your monthly graph.</p>
+        <p class="bar-legend">
+          <span><i class="dot dot-income"></i>Income</span>
+          <span><i class="dot dot-expense"></i>Expenses</span>
+        </p>
+      </article>
+
+      <article class="card wide">
+        <div class="chart-head">
+          <h2 class="card-title">Balance over time</h2>
+          <p class="chart-note">Running balance after each day</p>
+        </div>
+        <div id="trendChart" role="img" aria-label="Line chart of your running balance"></div>
+        <p class="empty" id="trendEmpty" hidden>Add a transaction to see your balance trend.</p>
+      </article>
+    </section>
+
+    <section class="card" aria-labelledby="formTitle">
+      <h2 class="card-title" id="formTitle">Add a Transaction</h2>
+
+      <form id="txForm" class="form-grid" novalidate>
+        <fieldset class="field">
+          <legend>Transaction Type</legend>
+          <div class="segmented">
+            <input type="radio" name="type" id="type-income" value="income" checked>
+            <label for="type-income">Income</label>
+            <input type="radio" name="type" id="type-expense" value="expense">
+            <label for="type-expense">Expense</label>
+          </div>
+        </fieldset>
+
+        <div class="field">
+          <label for="description">Description</label>
+          <input type="text" id="description" maxlength="60" placeholder="e.g. Monthly allowance" autocomplete="off" aria-describedby="error-description">
+          <small class="error" id="error-description"></small>
+        </div>
+
+        <div class="field">
+          <label for="amount">Amount (LKR)</label>
+          <input type="number" id="amount" min="0" step="0.01" inputmode="decimal" placeholder="Enter amount" aria-describedby="error-amount">
+          <small class="error" id="error-amount"></small>
+        </div>
+
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" aria-describedby="error-category"></select>
+          <small class="error" id="error-category"></small>
+        </div>
+
+        <div class="field">
+          <label for="date">Transaction Date</label>
+          <input type="date" id="date" aria-describedby="error-date">
+          <small class="error" id="error-date"></small>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn btn-primary">Add Transaction</button>
+          <button type="button" class="btn btn-ghost" id="clearBtn">Clear Form</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="categoriesTitle">
+      <h2 class="card-title" id="categoriesTitle">Categories</h2>
+      <p class="hint">Select a category to see all of its transactions.</p>
+      <div id="categories">
+        <div class="cat-group">
+          <h3>Income</h3>
+          <div class="chips" id="incomeCategories"></div>
+        </div>
+        <div class="cat-group">
+          <h3>Expenses</h3>
+          <div class="chips" id="expenseCategories"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="history" aria-labelledby="historyTitle">
+      <div class="chart-head">
+        <h2 class="card-title" id="historyTitle">Transaction History</h2>
+        <button type="button" class="btn btn-ghost btn-sm" id="exportBtn">Export CSV</button>
+      </div>
+
+      <div class="toolbar">
+        <div class="field">
+          <label for="filter">Filter by Type</label>
+          <select id="filter">
+            <option value="all">All Transactions</option>
+            <option value="income">Income Only</option>
+            <option value="expense">Expenses Only</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="search">Search Transactions</label>
+          <input type="search" id="search" placeholder="Search by description or category" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="active-filter" id="activeFilter" hidden>
+        <span id="activeFilterText"></span>
+        <button type="button" class="btn-link" id="showAllBtn">Show all transactions</button>
+      </div>
+
+      <p class="result-count" id="resultCount" aria-live="polite"></p>
+
+      <div class="table-wrap" id="tableWrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th scope="col">Date</th>
+              <th scope="col">Description</th>
+              <th scope="col">Type</th>
+              <th scope="col">Category</th>
+              <th scope="col" class="num">Amount (LKR)</th>
+              <th scope="col">Action</th>
+            </tr>
+          </thead>
+          <tbody id="txBody"></tbody>
+        </table>
+      </div>
+
+      <p class="empty" id="emptyState" hidden></p>
+    </section>
+  </main>
+
+  <footer class="footer">Personal Expense Tracker | Front-End Development Lab</footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</body>
+</html>
